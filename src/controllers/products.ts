@@ -9,7 +9,9 @@ export class ProductsController {
   }
 
   list = async (req: Request, res: Response) => {
+    console.log('[ProductsController] GET /products called');
     const products = await this.service.list();
+    console.log('[ProductsController] Returning products:', JSON.stringify(products, null, 2));
     return res.json(products);
   };
 
@@ -34,5 +36,16 @@ export class ProductsController {
   delete = async (req: Request, res: Response) => {
     await this.service.delete(req.params.id);
     return res.status(204).send();
+  };
+
+  /**
+   * Retorna todas as imagens de um produto
+   * GET /products/:id/images
+   */
+  getImages = async (req: Request, res: Response) => {
+    console.log('[ProductsController] GET /products/:id/images called for:', req.params.id);
+    const images = await this.service.getImages(req.params.id);
+    console.log('[ProductsController] Returning images:', images);
+    return res.json({ images });
   };
 }

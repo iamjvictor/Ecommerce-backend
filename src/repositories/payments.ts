@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '../lib/supabase';
-import { Payment } from '../types';
+import { Payment, PaymentStatus } from '../types';
 
 export class PaymentsRepository {
   private table = 'payments';
@@ -37,7 +37,28 @@ export class PaymentsRepository {
     return data;
   }
 
-  async updateStatus(id: string, status: Payment['status'], metadata?: Record<string, unknown>): Promise<Payment> {
+  /**
+   * Atualiza campos específicos de um pagamento
+   */
+  async update(id: string, updates: Partial<Payment>): Promise<Payment> {
+    const { data, error } = await supabaseAdmin
+      .from(this.table)
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  /**
+   * Atualiza apenas o status de um pagamento
+   */
+  async updateStatus(id: string, status: PaymentStatus, metadata?: Record<string, unknown>): Promise<Payment> {
     const updateData: Partial<Payment> = {
       status,
       updated_at: new Date().toISOString(),

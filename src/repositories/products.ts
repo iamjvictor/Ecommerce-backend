@@ -6,10 +6,15 @@ export class ProductsRepository {
   private variantsTable = 'product_variants';
 
   async findAll(): Promise<Product[]> {
+    console.log('[ProductsRepository] Fetching all products from table:', this.table);
+    
     const { data, error } = await supabaseAdmin
       .from(this.table)
       .select('*')
       .eq('is_active', true);
+
+    console.log('[ProductsRepository] Raw response:', JSON.stringify(data, null, 2));
+    console.log('[ProductsRepository] Error:', error);
 
     if (error) throw error;
     return data || [];
@@ -29,7 +34,7 @@ export class ProductsRepository {
   async findWithVariants(id: string): Promise<(Product & { variants: ProductVariant[] }) | null> {
     const { data, error } = await supabaseAdmin
       .from(this.table)
-      .select(`*, variants:${this.variantsTable}(*)`)
+      .select('*, variants:product_variants(*)')
       .eq('id', id)
       .single();
 

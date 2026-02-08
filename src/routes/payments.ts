@@ -1,16 +1,13 @@
 import { Router } from 'express';
-import { PaymentsController } from '../controllers/payments';
-import { authMiddleware } from '../lib/authMiddleware';
+import { PaymentController } from '../controllers/payments';
 import { validate } from '../middleware/validate';
-import { createPaymentSchema, paymentIdSchema } from '../schemas/payments';
+import { createPaymentSchema } from '../schemas/payment';
 
 const router = Router();
-const controller = new PaymentsController();
+const controller = new PaymentController();
 
-router.use(authMiddleware);
-
-router.post('/', validate(createPaymentSchema), controller.create);
-router.post('/:id/confirm', validate(paymentIdSchema), controller.confirm);
-router.get('/:id', validate(paymentIdSchema), controller.getById);
+// POST /api/payments/create - Criar pagamento (PIX ou Cartão)
+// Público: não requer autenticação (cliente faz checkout sem login)
+router.post('/create', validate(createPaymentSchema), (req, res) => controller.create(req, res));
 
 export default router;

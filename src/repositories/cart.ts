@@ -20,7 +20,7 @@ export class CartRepository {
   async findWithItems(cartId: string): Promise<(Cart & { items: CartItem[] }) | null> {
     const { data, error } = await supabaseAdmin
       .from(this.cartsTable)
-      .select(`*, items:${this.itemsTable}(*)`)
+      .select('*, items:cart_items(*)')
       .eq('id', cartId)
       .single();
 
